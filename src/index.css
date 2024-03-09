@@ -1,0 +1,49 @@
+.modelTitle {
+  font-size: 35px;
+  font-weight: 800;
+  color: #17a2b8;
+}
+.modelFormLabel {
+  font-size: 18px;
+  font-weight: 800;
+  color: #17a2b8;
+}
+.center_loader {
+  display: flex;
+  justify-content: center;
+  align-items: first baseline;
+  text-align: center;
+  min-height: 100vh;
+}
+.custom_loader {
+  /* height: 80px;
+  width: 80px; */
+  opacity: 0.9;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  padding: 12px;
+  background: conic-gradient(from 135deg at top, #d43306 90deg, #0000 0) 0
+      calc(50% - 8px) / 34px 17px,
+    radial-gradient(
+        farthest-side at bottom left,
+        #0000 calc(100% - 12px),
+        #d43306 calc(100% - 10px) 99%,
+        #0000
+      )
+      top right/50% 50% content-box content-box,
+    radial-gradient(
+        farthest-side at top,
+        #0000 calc(100% - 12px),
+        #d43306 calc(100% - 10px) 99%,
+        #0000
+      )
+      bottom / 100% 50% content-box content-box;
+  background-repeat: no-repeat;
+  animation: s1 1s infinite linear;
+}
+@keyframes s1 {
+  100% {
+    transform: rotate(1turn);
+  }
+}
