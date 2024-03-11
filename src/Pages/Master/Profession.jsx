@@ -6,22 +6,20 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
-import * as CATEGORY from "../../Services/ServiceCategory";
+import * as PROFESSION from "../../Services/ServiceProfession";
 
-export default function RmCategory() {
+export default function Profession() {
   let status = 0;
   let apidata = "";
   let tableBody = "";
   let modelBody = "";
   const [modelShow, setModelShow] = useState(false);
-  const [modelTitle, setModelTitle] = useState("Create New Category");
+  const [modelTitle, setModelTitle] = useState("Create Profession");
   const [modelBtnActionText, setModelBtnActionText] = useState("Create");
   const [showTable, setShowTable] = useState(false);
-  const [categories, setCategories] = useState([]);
-  const [categoryId, setCategoryId] = useState("");
-  const [categoryDesc, setCategoryDesc] = useState("");
-  const [categoryFare, setCategoryFare] = useState("");
-  const [categoryExtra, setCategoryExtra] = useState("");
+  const [profession, setProfessions] = useState([]);
+  const [professionId, setProfessionId] = useState("");
+  const [professionDesc, setProfessionDesc] = useState("");
 
   useEffect(() => {
     $("#example1").DataTable().destroy();
@@ -35,16 +33,16 @@ export default function RmCategory() {
       .buttons()
       .container()
       .appendTo("#example1_wrapper .col-md-6:eq(0)");
-    CategoryAPICall();
+    ProfessionAPICall();
   }, [showTable]);
 
-  const CategoryAPICall = () => {
-    CATEGORY.GET_CATEGORY()
+  const ProfessionAPICall = () => {
+    PROFESSION.GET_PROFESSION_HEAD()
       .then((response) => {
         status = response.data.STATUS;
         apidata = response.data.DATA;
         if (status === 200) {
-          setCategories(apidata);
+          setProfessions(apidata);
           setShowTable(true);
         } else {
           Swal.fire({
@@ -63,8 +61,8 @@ export default function RmCategory() {
       });
   };
 
-  const CreateCategoryAPICall = (categoryDesc, categoryFare, categoryExtra) => {
-    CATEGORY.CREATE_CATEGORY(categoryDesc, categoryFare, categoryExtra)
+  const CreateProfessionAPICall = (professionDesc) => {
+    PROFESSION.CREATE_PROFESSION_HEAD(professionDesc)
       .then((response) => {
         if (response.data.STATUS == 400) {
           Swal.fire({
@@ -82,11 +80,11 @@ export default function RmCategory() {
           Swal.fire({
             icon: "success",
             title: "Server Response",
-            text: "Category Created Successfully !",
+            text: "Profession Created Successfully !",
           }).then((result) => {
             if (result.isConfirmed) {
               setModelShow(false);
-              CategoryAPICall();
+              ProfessionAPICall();
             }
           });
         }
@@ -100,15 +98,10 @@ export default function RmCategory() {
       });
   };
 
-  const UpdateCategoryAPICall = (itemdata) => {
+  const UpdateProfessionAPICall = (itemdata) => {
     setModelShow(true);
     setModelBtnActionText("Update");
-    CATEGORY.UPDATE_CATEGORY(
-      categoryDesc,
-      categoryFare,
-      categoryExtra,
-      categoryId
-    )
+    PROFESSION.UPDATE_PROFESSION_HEAD(professionDesc, professionId)
       .then((response) => {
         if (response.data.STATUS == 400) {
           Swal.fire({
@@ -130,13 +123,10 @@ export default function RmCategory() {
           }).then((result) => {
             if (result.isConfirmed) {
               setModelShow(false);
-              CategoryAPICall();
-              setCategoryDesc("");
-              setCategoryFare("");
-              setCategoryExtra("");
-              setCategoryId("");
+              ProfessionAPICall();
+              setProfessionDesc("");
               setModelBtnActionText("Create");
-              setModelTitle("Create New Category");
+              setModelTitle("Create Profession");
             }
           });
         }
@@ -150,7 +140,7 @@ export default function RmCategory() {
       });
   };
 
-  const DeleteCategoryAPICall = (itemdata) => {
+  const DeleteProfessionAPICall = (itemdata) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -161,7 +151,7 @@ export default function RmCategory() {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        CATEGORY.DELETE_CATEGORY(itemdata.RMCT_CODE)
+        PROFESSION.DELETE_PROFESSION_HEAD(itemdata.PROF_CODE)
           .then((response) => {
             if (response.data.STATUS == 400) {
               Swal.fire({
@@ -169,7 +159,7 @@ export default function RmCategory() {
                 title: "Server Response",
                 text: "No Input Data Found !",
               });
-              CategoryAPICall();
+              ProfessionAPICall();
             } else if (response.data.STATUS == 200) {
               Swal.fire({
                 title: "Deleted!",
@@ -177,7 +167,7 @@ export default function RmCategory() {
                 icon: "success",
               }).then((result) => {
                 if (result.isConfirmed) {
-                  CategoryAPICall();
+                  ProfessionAPICall();
                 }
               });
             }
@@ -196,31 +186,21 @@ export default function RmCategory() {
   const onModelClose = () => {
     setModelShow(false);
     setModelBtnActionText("Create");
-    setCategoryDesc("");
-    setCategoryFare("");
-    setCategoryExtra("");
-    setCategoryId("");
-    setModelTitle("Create new Category");
+    setProfessionDesc("");
+    setModelTitle("Create Profession");
   };
 
   const onModelOpen = () => {
     setModelShow(true);
-    setCategoryDesc("");
-    setCategoryFare("");
-    setCategoryExtra("");
-    setCategoryId("");
+    setProfessionDesc("");
+    setProfessionId("");
   };
 
   const onModelAction = (itemData) => {
     if (modelBtnActionText == "Create") {
-      CreateCategoryAPICall(categoryDesc, categoryFare, categoryExtra);
+      CreateProfessionAPICall(professionDesc);
     } else if (modelBtnActionText == "Update") {
-      UpdateCategoryAPICall(
-        categoryDesc,
-        categoryFare,
-        categoryExtra,
-        categoryId
-      );
+      UpdateProfessionAPICall(professionDesc, professionId);
     }
   };
 
@@ -228,13 +208,11 @@ export default function RmCategory() {
     if (ACTION_TYPE === "Edit") {
       setModelShow(true);
       setModelBtnActionText("Update");
-      setModelTitle("Update Category");
-      setCategoryDesc(itemData.RMCT_DESC);
-      setCategoryFare(itemData.ROOM_FARE);
-      setCategoryExtra(itemData.EXTRA_PERSON_FARE);
-      setCategoryId(itemData.RMCT_CODE);
+      setModelTitle("Update Profession");
+      setProfessionDesc(itemData.PROF_DESC);
+      setProfessionId(itemData.PROF_CODE);
     } else if (ACTION_TYPE === "Delete") {
-      DeleteCategoryAPICall(itemData);
+      DeleteProfessionAPICall(itemData);
     }
   };
 
@@ -247,30 +225,12 @@ export default function RmCategory() {
         <Modal.Body>
           <Form>
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label className="modelFormLabel">Category</Form.Label>
+              <Form.Label className="modelFormLabel">Profession</Form.Label>
               <Form.Control
                 type="text"
-                value={categoryDesc}
-                onChange={(e) => setCategoryDesc(e.target.value)}
+                value={professionDesc}
+                onChange={(e) => setProfessionDesc(e.target.value)}
                 autoFocus
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label className="modelFormLabel">Room Fare</Form.Label>
-              <Form.Control
-                type="number"
-                value={categoryFare}
-                onChange={(e) => setCategoryFare(e.target.value)}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label className="modelFormLabel">
-                Extra Person Fare
-              </Form.Label>
-              <Form.Control
-                type="number"
-                value={categoryExtra}
-                onChange={(e) => setCategoryExtra(e.target.value)}
               />
             </Form.Group>
           </Form>
@@ -300,22 +260,18 @@ export default function RmCategory() {
                 >
                   <thead className="bg-info">
                     <tr>
-                      <th>Category Id</th>
-                      <th>Room Category</th>
-                      <th>Fare</th>
-                      <th>Extra Person Fare</th>
+                      <th>Profession Id</th>
+                      <th>Profession Desc</th>
                       <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {categories &&
-                      categories.map((item, index) => {
+                    {profession &&
+                      profession.map((item, index) => {
                         return (
                           <tr key={index}>
-                            <td>{item.RMCT_CODE}</td>
-                            <td>{item.RMCT_DESC}</td>
-                            <td>{item.ROOM_FARE}</td>
-                            <td>{item.EXTRA_PERSON_FARE}</td>
+                            <td>{item.PROF_CODE}</td>
+                            <td>{item.PROF_DESC}</td>
                             <td>
                               <div
                                 className="btn-group"
@@ -359,19 +315,6 @@ export default function RmCategory() {
     );
   }
 
-  function alertM() {
-    Swal.fire({
-      title: "Do you want to save the changes?",
-      html: formBody,
-    }).then((result) => {
-      /* Read more about isConfirmed, isDenied below */
-      if (result.isConfirmed) {
-        Swal.fire("Saved!", "", "success");
-      } else if (result.isDenied) {
-        Swal.fire("Changes are not saved", "", "info");
-      }
-    });
-  }
   return (
     <>
       <Nav />
@@ -385,7 +328,7 @@ export default function RmCategory() {
                   className=" btn btn-info text-bold  mx-3"
                   onClick={onModelOpen}
                 >
-                  Add New Category
+                  Add Profession
                 </Button>
               </div>
             </div>

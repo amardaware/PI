@@ -6,22 +6,22 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
+import * as ROOM from "../../Services/ServiceRooms";
 import * as CATEGORY from "../../Services/ServiceCategory";
-
-export default function RmCategory() {
+export default function RmRoom() {
   let status = 0;
   let apidata = "";
   let tableBody = "";
   let modelBody = "";
   const [modelShow, setModelShow] = useState(false);
-  const [modelTitle, setModelTitle] = useState("Create New Category");
+  const [modelTitle, setModelTitle] = useState("Create New Room");
   const [modelBtnActionText, setModelBtnActionText] = useState("Create");
   const [showTable, setShowTable] = useState(false);
+  const [rooms, setRooms] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [categoryId, setCategoryId] = useState("");
-  const [categoryDesc, setCategoryDesc] = useState("");
-  const [categoryFare, setCategoryFare] = useState("");
-  const [categoryExtra, setCategoryExtra] = useState("");
+  const [rmnoCode, setRmnoCode] = useState("");
+  const [rmnoDesc, setRmnoDesc] = useState("");
+  const [rmctCode, setRmctCode] = useState("");
 
   useEffect(() => {
     $("#example1").DataTable().destroy();
@@ -35,16 +35,16 @@ export default function RmCategory() {
       .buttons()
       .container()
       .appendTo("#example1_wrapper .col-md-6:eq(0)");
-    CategoryAPICall();
+    RoomAPICall();
   }, [showTable]);
 
-  const CategoryAPICall = () => {
-    CATEGORY.GET_CATEGORY()
+  const RoomAPICall = () => {
+    ROOM.GET_ROOM()
       .then((response) => {
         status = response.data.STATUS;
         apidata = response.data.DATA;
         if (status === 200) {
-          setCategories(apidata);
+          setRooms(apidata);
           setShowTable(true);
         } else {
           Swal.fire({
@@ -63,8 +63,30 @@ export default function RmCategory() {
       });
   };
 
-  const CreateCategoryAPICall = (categoryDesc, categoryFare, categoryExtra) => {
-    CATEGORY.CREATE_CATEGORY(categoryDesc, categoryFare, categoryExtra)
+  const CategoryAPICall = () => {
+    CATEGORY.GET_CATEGORY()
+      .then((response) => {
+        if (response.data.STATUS == 200) {
+          setCategories(response.data.DATA);
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Response Error",
+          });
+        }
+      })
+      .catch((error) => {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: error,
+        });
+      });
+  };
+
+  const CreateRoomAPICall = (rmnoDesc, rmctCode) => {
+    ROOM.CREATE_ROOM(rmnoDesc, rmctCode)
       .then((response) => {
         if (response.data.STATUS == 400) {
           Swal.fire({
@@ -82,11 +104,11 @@ export default function RmCategory() {
           Swal.fire({
             icon: "success",
             title: "Server Response",
-            text: "Category Created Successfully !",
+            text: "Room Created Successfully !",
           }).then((result) => {
             if (result.isConfirmed) {
               setModelShow(false);
-              CategoryAPICall();
+              RoomAPICall();
             }
           });
         }
@@ -100,15 +122,10 @@ export default function RmCategory() {
       });
   };
 
-  const UpdateCategoryAPICall = (itemdata) => {
+  const UpdateRoomAPICall = (itemdata) => {
     setModelShow(true);
     setModelBtnActionText("Update");
-    CATEGORY.UPDATE_CATEGORY(
-      categoryDesc,
-      categoryFare,
-      categoryExtra,
-      categoryId
-    )
+    ROOM.UPDATE_ROOM(rmnoDesc, rmctCode, rmnoCode)
       .then((response) => {
         if (response.data.STATUS == 400) {
           Swal.fire({
@@ -130,13 +147,12 @@ export default function RmCategory() {
           }).then((result) => {
             if (result.isConfirmed) {
               setModelShow(false);
-              CategoryAPICall();
-              setCategoryDesc("");
-              setCategoryFare("");
-              setCategoryExtra("");
-              setCategoryId("");
+              RoomAPICall();
+              setRmnoDesc("");
+              setRmctCode("");
+              setRmnoCode("");
               setModelBtnActionText("Create");
-              setModelTitle("Create New Category");
+              setModelTitle("Create New Room");
             }
           });
         }
@@ -150,7 +166,7 @@ export default function RmCategory() {
       });
   };
 
-  const DeleteCategoryAPICall = (itemdata) => {
+  const DeleteRoomAPICall = (itemdata) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -161,7 +177,7 @@ export default function RmCategory() {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        CATEGORY.DELETE_CATEGORY(itemdata.RMCT_CODE)
+        ROOM.DELETE_ROOM(itemdata)
           .then((response) => {
             if (response.data.STATUS == 400) {
               Swal.fire({
@@ -169,7 +185,7 @@ export default function RmCategory() {
                 title: "Server Response",
                 text: "No Input Data Found !",
               });
-              CategoryAPICall();
+              RoomAPICall();
             } else if (response.data.STATUS == 200) {
               Swal.fire({
                 title: "Deleted!",
@@ -177,7 +193,7 @@ export default function RmCategory() {
                 icon: "success",
               }).then((result) => {
                 if (result.isConfirmed) {
-                  CategoryAPICall();
+                  RoomAPICall();
                 }
               });
             }
@@ -196,31 +212,25 @@ export default function RmCategory() {
   const onModelClose = () => {
     setModelShow(false);
     setModelBtnActionText("Create");
-    setCategoryDesc("");
-    setCategoryFare("");
-    setCategoryExtra("");
-    setCategoryId("");
-    setModelTitle("Create new Category");
+    setRmnoDesc("");
+    setRmctCode("");
+    setRmnoCode("");
+    setModelTitle("Create New Room");
   };
 
   const onModelOpen = () => {
     setModelShow(true);
-    setCategoryDesc("");
-    setCategoryFare("");
-    setCategoryExtra("");
-    setCategoryId("");
+    CategoryAPICall();
+    setRmnoDesc("");
+    setRmnoCode("");
+    setRmctCode("");
   };
 
   const onModelAction = (itemData) => {
     if (modelBtnActionText == "Create") {
-      CreateCategoryAPICall(categoryDesc, categoryFare, categoryExtra);
+      CreateRoomAPICall(rmnoDesc, rmctCode);
     } else if (modelBtnActionText == "Update") {
-      UpdateCategoryAPICall(
-        categoryDesc,
-        categoryFare,
-        categoryExtra,
-        categoryId
-      );
+      UpdateRoomAPICall(rmnoDesc, rmctCode, rmnoCode);
     }
   };
 
@@ -228,13 +238,12 @@ export default function RmCategory() {
     if (ACTION_TYPE === "Edit") {
       setModelShow(true);
       setModelBtnActionText("Update");
-      setModelTitle("Update Category");
-      setCategoryDesc(itemData.RMCT_DESC);
-      setCategoryFare(itemData.ROOM_FARE);
-      setCategoryExtra(itemData.EXTRA_PERSON_FARE);
-      setCategoryId(itemData.RMCT_CODE);
+      setModelTitle("Update Room");
+      setRmnoDesc(itemData.RMNO_DESC);
+      setRmctCode(itemData.RMCT_CODE);
+      setRmnoCode(itemData.RMNO_CODE);
     } else if (ACTION_TYPE === "Delete") {
-      DeleteCategoryAPICall(itemData);
+      DeleteRoomAPICall(itemData.RMNO_CODE);
     }
   };
 
@@ -247,31 +256,32 @@ export default function RmCategory() {
         <Modal.Body>
           <Form>
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label className="modelFormLabel">Category</Form.Label>
+              <Form.Label className="modelFormLabel">Room No Desc</Form.Label>
               <Form.Control
                 type="text"
-                value={categoryDesc}
-                onChange={(e) => setCategoryDesc(e.target.value)}
+                value={rmnoDesc}
+                onChange={(e) => setRmnoDesc(e.target.value)}
                 autoFocus
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label className="modelFormLabel">Room Fare</Form.Label>
-              <Form.Control
-                type="number"
-                value={categoryFare}
-                onChange={(e) => setCategoryFare(e.target.value)}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label className="modelFormLabel">
-                Extra Person Fare
-              </Form.Label>
-              <Form.Control
-                type="number"
-                value={categoryExtra}
-                onChange={(e) => setCategoryExtra(e.target.value)}
-              />
+              <Form.Select
+                className="form-control"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setRmctCode(e.target.value);
+                }}
+              >
+                <option>Select</option>
+                {categories &&
+                  categories.map((item, index) => {
+                    return (
+                      <option Value={item.RMCT_CODE} key={index}>
+                        {item.RMCT_DESC}
+                      </option>
+                    );
+                  })}
+              </Form.Select>
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -300,22 +310,20 @@ export default function RmCategory() {
                 >
                   <thead className="bg-info">
                     <tr>
-                      <th>Category Id</th>
-                      <th>Room Category</th>
-                      <th>Fare</th>
-                      <th>Extra Person Fare</th>
+                      <th>Room Id</th>
+                      <th>Room Desc</th>
+                      <th>Category Desc</th>
                       <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {categories &&
-                      categories.map((item, index) => {
+                    {rooms &&
+                      rooms.map((item, index) => {
                         return (
                           <tr key={index}>
-                            <td>{item.RMCT_CODE}</td>
+                            <td>{item.RMNO_CODE}</td>
+                            <td>{item.RMNO_DESC}</td>
                             <td>{item.RMCT_DESC}</td>
-                            <td>{item.ROOM_FARE}</td>
-                            <td>{item.EXTRA_PERSON_FARE}</td>
                             <td>
                               <div
                                 className="btn-group"
@@ -372,6 +380,7 @@ export default function RmCategory() {
       }
     });
   }
+
   return (
     <>
       <Nav />
@@ -385,7 +394,7 @@ export default function RmCategory() {
                   className=" btn btn-info text-bold  mx-3"
                   onClick={onModelOpen}
                 >
-                  Add New Category
+                  Add New Room
                 </Button>
               </div>
             </div>

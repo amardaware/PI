@@ -15,6 +15,10 @@
   text-align: center;
   min-height: 100vh;
 }
+.my-modal {
+  width: 90vw; /* Occupy the 90% of the screen width */
+  max-width: 90vw;
+}
 .custom_loader {
   /* height: 80px;
   width: 80px; */

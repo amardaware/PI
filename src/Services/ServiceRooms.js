@@ -1,11 +1,11 @@
 import axios from "axios";
-export const getRoomNumbers = async () => {
+export const GET_ROOM = async () => {
   return await axios.get(
     `http://online.pranaliinfotech.com/lodging/api/RoomNumber/GetRoomNos`
   );
 };
 
-export const createRoom = async (roomDesc, rmctCode) => {
+export const CREATE_ROOM = async (roomDesc, rmctCode) => {
   return await axios({
     url: `http://online.pranaliinfotech.com/lodging/api/RoomNumber/CreateRoom`,
     method: "POST",
@@ -20,15 +20,14 @@ export const createRoom = async (roomDesc, rmctCode) => {
   });
 };
 
-export const updateRoom = async (catName, fare, extraFare, rmctCode) => {
+export const UPDATE_ROOM = async (rmnoDesc, rmctCode, rmnoCode) => {
   return await axios({
-    url: `http://online.pranaliinfotech.com/lodging/api/RoomCategory/UpdateCategory`,
+    url: `http://online.pranaliinfotech.com/lodging/api/RoomNumber/UpdateRoom`,
     method: "POST",
     data: {
-      RMCT_DESC: catName,
-      ROOM_FARE: fare,
-      EXTRA_PERSON_FARE: extraFare,
+      RMNO_DESC: rmnoDesc,
       RMCT_CODE: rmctCode,
+      RMNO_CODE: rmnoCode,
     },
     headers: {
       "content-type": "application/json",
@@ -37,9 +36,9 @@ export const updateRoom = async (catName, fare, extraFare, rmctCode) => {
   });
 };
 
-export const deleteRoom = async (rmnoCode) => {
+export const DELETE_ROOM = async (rmnoCode) => {
   return await axios({
-    url: `http://online.pranaliinfotech.com/lodging/api/RoomCategory/DeleteCategory`,
+    url: `http://online.pranaliinfotech.com/lodging/api/RoomNumber/DeleteRoom`,
     method: "POST",
     data: {
       RMNO_CODE: rmnoCode,

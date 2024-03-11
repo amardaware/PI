@@ -41,7 +41,7 @@ export default function Sidebar() {
             >
               <li className="nav-item menu-open">
                 <NavLink to="/" className="nav-link">
-                  <i class="nav-icon fas fa-tachometer-alt"></i>
+                  <i className="nav-icon fas fa-tachometer-alt"></i>
                   <p>Dashboard</p>
                 </NavLink>
               </li>
@@ -56,8 +56,67 @@ export default function Sidebar() {
                 <ul className="nav nav-treeview">
                   <li className="nav-item">
                     <NavLink to="/Category" className="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
+                      <i className="far fa-circle nav-icon"></i>
                       <p>Room Category</p>
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink to="/Room" className="nav-link">
+                      <i className="far fa-circle nav-icon"></i>
+                      <p>Room No</p>
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink to="/RoomService" className="nav-link">
+                      <i className="far fa-circle nav-icon"></i>
+                      <p>Room Service Head</p>
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink to="/PhotoId" className="nav-link">
+                      <i className="far fa-circle nav-icon"></i>
+                      <p>Photo Id </p>
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink to="/Profession" className="nav-link">
+                      <i className="far fa-circle nav-icon"></i>
+                      <p>Profession</p>
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink to="/LodgingItem" className="nav-link">
+                      <i className="far fa-circle nav-icon"></i>
+                      <p>Lodging Item </p>
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink to="/Nationality" className="nav-link">
+                      <i className="far fa-circle nav-icon"></i>
+                      <p>Nationality</p>
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink to="/OnlineBooking" className="nav-link">
+                      <i className="far fa-circle nav-icon"></i>
+                      <p>Online Booking Head </p>
+                    </NavLink>
+                  </li>
+                </ul>
+              </li>
+              <li className="nav-item">
+                <a href="#" className="nav-link">
+                  <i className="nav-icon fas fa-tachometer-alt"></i>
+                  <p>
+                    Daily Transaction
+                    <i className="fas fa-angle-left right"></i>
+                  </p>
+                </a>
+                <ul className="nav nav-treeview">
+                  <li className="nav-item">
+                    <NavLink to="/RoomBooking" className="nav-link">
+                      <i className="far fa-circle nav-icon"></i>
+                      <p>Room Book Entry</p>
                     </NavLink>
                   </li>
                 </ul>

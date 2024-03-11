@@ -6,22 +6,19 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
-import * as CATEGORY from "../../Services/ServiceCategory";
-
-export default function RmCategory() {
+import * as ONLINENOOKING from "../../Services/ServiceOnlineBookingHead";
+export default function OnlineBookingHead() {
   let status = 0;
   let apidata = "";
   let tableBody = "";
   let modelBody = "";
   const [modelShow, setModelShow] = useState(false);
-  const [modelTitle, setModelTitle] = useState("Create New Category");
+  const [modelTitle, setModelTitle] = useState("Create Booking Head");
   const [modelBtnActionText, setModelBtnActionText] = useState("Create");
   const [showTable, setShowTable] = useState(false);
-  const [categories, setCategories] = useState([]);
-  const [categoryId, setCategoryId] = useState("");
-  const [categoryDesc, setCategoryDesc] = useState("");
-  const [categoryFare, setCategoryFare] = useState("");
-  const [categoryExtra, setCategoryExtra] = useState("");
+  const [onlineBooking, setOnlineBookings] = useState([]);
+  const [onlineBookingId, setOnlineBookingId] = useState("");
+  const [onlineBookingDesc, setOnlineBookingDesc] = useState("");
 
   useEffect(() => {
     $("#example1").DataTable().destroy();
@@ -35,16 +32,16 @@ export default function RmCategory() {
       .buttons()
       .container()
       .appendTo("#example1_wrapper .col-md-6:eq(0)");
-    CategoryAPICall();
+    OnlineBookingAPICall();
   }, [showTable]);
 
-  const CategoryAPICall = () => {
-    CATEGORY.GET_CATEGORY()
+  const OnlineBookingAPICall = () => {
+    ONLINENOOKING.GET_ONLINE_BOOKING_HEAD()
       .then((response) => {
         status = response.data.STATUS;
         apidata = response.data.DATA;
         if (status === 200) {
-          setCategories(apidata);
+          setOnlineBookings(apidata);
           setShowTable(true);
         } else {
           Swal.fire({
@@ -63,8 +60,8 @@ export default function RmCategory() {
       });
   };
 
-  const CreateCategoryAPICall = (categoryDesc, categoryFare, categoryExtra) => {
-    CATEGORY.CREATE_CATEGORY(categoryDesc, categoryFare, categoryExtra)
+  const CreateOnlineBookingAPICall = (onlineBookingDesc) => {
+    ONLINENOOKING.CREATE_ONLINE_BOOKING_HEAD(onlineBookingDesc)
       .then((response) => {
         if (response.data.STATUS == 400) {
           Swal.fire({
@@ -82,11 +79,13 @@ export default function RmCategory() {
           Swal.fire({
             icon: "success",
             title: "Server Response",
-            text: "Category Created Successfully !",
+            text: "Online Booking Head Created Successfully !",
           }).then((result) => {
             if (result.isConfirmed) {
               setModelShow(false);
-              CategoryAPICall();
+              OnlineBookingAPICall();
+              setOnlineBookingDesc("");
+              setModelTitle("Create Booking Head");
             }
           });
         }
@@ -100,15 +99,10 @@ export default function RmCategory() {
       });
   };
 
-  const UpdateCategoryAPICall = (itemdata) => {
+  const UpdateOnlineBookingAPICall = (itemdata) => {
     setModelShow(true);
     setModelBtnActionText("Update");
-    CATEGORY.UPDATE_CATEGORY(
-      categoryDesc,
-      categoryFare,
-      categoryExtra,
-      categoryId
-    )
+    ONLINENOOKING.UPDATE_ONLINE_BOOKING_HEAD(onlineBookingDesc, onlineBookingId)
       .then((response) => {
         if (response.data.STATUS == 400) {
           Swal.fire({
@@ -130,13 +124,10 @@ export default function RmCategory() {
           }).then((result) => {
             if (result.isConfirmed) {
               setModelShow(false);
-              CategoryAPICall();
-              setCategoryDesc("");
-              setCategoryFare("");
-              setCategoryExtra("");
-              setCategoryId("");
+              OnlineBookingAPICall();
+              setOnlineBookingDesc("");
               setModelBtnActionText("Create");
-              setModelTitle("Create New Category");
+              setModelTitle("Create Booking Head");
             }
           });
         }
@@ -150,7 +141,7 @@ export default function RmCategory() {
       });
   };
 
-  const DeleteCategoryAPICall = (itemdata) => {
+  const DeleteOnlineBookingAPICall = (itemdata) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -161,7 +152,7 @@ export default function RmCategory() {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        CATEGORY.DELETE_CATEGORY(itemdata.RMCT_CODE)
+        ONLINENOOKING.DELETE_ONLINE_BOOKING_HEAD(itemdata.ONBK_CODE)
           .then((response) => {
             if (response.data.STATUS == 400) {
               Swal.fire({
@@ -169,7 +160,7 @@ export default function RmCategory() {
                 title: "Server Response",
                 text: "No Input Data Found !",
               });
-              CategoryAPICall();
+              OnlineBookingAPICall();
             } else if (response.data.STATUS == 200) {
               Swal.fire({
                 title: "Deleted!",
@@ -177,7 +168,7 @@ export default function RmCategory() {
                 icon: "success",
               }).then((result) => {
                 if (result.isConfirmed) {
-                  CategoryAPICall();
+                  OnlineBookingAPICall();
                 }
               });
             }
@@ -196,31 +187,21 @@ export default function RmCategory() {
   const onModelClose = () => {
     setModelShow(false);
     setModelBtnActionText("Create");
-    setCategoryDesc("");
-    setCategoryFare("");
-    setCategoryExtra("");
-    setCategoryId("");
-    setModelTitle("Create new Category");
+    setOnlineBookingDesc("");
+    setModelTitle("Create Booking Head");
   };
 
   const onModelOpen = () => {
     setModelShow(true);
-    setCategoryDesc("");
-    setCategoryFare("");
-    setCategoryExtra("");
-    setCategoryId("");
+    setOnlineBookingDesc;
+    setOnlineBookingId("");
   };
 
   const onModelAction = (itemData) => {
     if (modelBtnActionText == "Create") {
-      CreateCategoryAPICall(categoryDesc, categoryFare, categoryExtra);
+      CreateOnlineBookingAPICall(onlineBookingDesc);
     } else if (modelBtnActionText == "Update") {
-      UpdateCategoryAPICall(
-        categoryDesc,
-        categoryFare,
-        categoryExtra,
-        categoryId
-      );
+      UpdateOnlineBookingAPICall(onlineBookingDesc, onlineBookingId);
     }
   };
 
@@ -228,13 +209,11 @@ export default function RmCategory() {
     if (ACTION_TYPE === "Edit") {
       setModelShow(true);
       setModelBtnActionText("Update");
-      setModelTitle("Update Category");
-      setCategoryDesc(itemData.RMCT_DESC);
-      setCategoryFare(itemData.ROOM_FARE);
-      setCategoryExtra(itemData.EXTRA_PERSON_FARE);
-      setCategoryId(itemData.RMCT_CODE);
+      setModelTitle("Update Booking Head");
+      setOnlineBookingDesc(itemData.ONBK_DESC);
+      setOnlineBookingId(itemData.ONBK_CODE);
     } else if (ACTION_TYPE === "Delete") {
-      DeleteCategoryAPICall(itemData);
+      DeleteOnlineBookingAPICall(itemData);
     }
   };
 
@@ -247,30 +226,14 @@ export default function RmCategory() {
         <Modal.Body>
           <Form>
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label className="modelFormLabel">Category</Form.Label>
-              <Form.Control
-                type="text"
-                value={categoryDesc}
-                onChange={(e) => setCategoryDesc(e.target.value)}
-                autoFocus
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label className="modelFormLabel">Room Fare</Form.Label>
-              <Form.Control
-                type="number"
-                value={categoryFare}
-                onChange={(e) => setCategoryFare(e.target.value)}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
               <Form.Label className="modelFormLabel">
-                Extra Person Fare
+                Online Booking Head
               </Form.Label>
               <Form.Control
-                type="number"
-                value={categoryExtra}
-                onChange={(e) => setCategoryExtra(e.target.value)}
+                type="text"
+                value={onlineBookingDesc}
+                onChange={(e) => setOnlineBookingDesc(e.target.value)}
+                autoFocus
               />
             </Form.Group>
           </Form>
@@ -300,22 +263,18 @@ export default function RmCategory() {
                 >
                   <thead className="bg-info">
                     <tr>
-                      <th>Category Id</th>
-                      <th>Room Category</th>
-                      <th>Fare</th>
-                      <th>Extra Person Fare</th>
+                      <th>Online Booking Head Id</th>
+                      <th>Online Booking Head Desc</th>
                       <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {categories &&
-                      categories.map((item, index) => {
+                    {onlineBooking &&
+                      onlineBooking.map((item, index) => {
                         return (
                           <tr key={index}>
-                            <td>{item.RMCT_CODE}</td>
-                            <td>{item.RMCT_DESC}</td>
-                            <td>{item.ROOM_FARE}</td>
-                            <td>{item.EXTRA_PERSON_FARE}</td>
+                            <td>{item.ONBK_CODE}</td>
+                            <td>{item.ONBK_DESC}</td>
                             <td>
                               <div
                                 className="btn-group"
@@ -359,19 +318,6 @@ export default function RmCategory() {
     );
   }
 
-  function alertM() {
-    Swal.fire({
-      title: "Do you want to save the changes?",
-      html: formBody,
-    }).then((result) => {
-      /* Read more about isConfirmed, isDenied below */
-      if (result.isConfirmed) {
-        Swal.fire("Saved!", "", "success");
-      } else if (result.isDenied) {
-        Swal.fire("Changes are not saved", "", "info");
-      }
-    });
-  }
   return (
     <>
       <Nav />
@@ -385,7 +331,7 @@ export default function RmCategory() {
                   className=" btn btn-info text-bold  mx-3"
                   onClick={onModelOpen}
                 >
-                  Add New Category
+                  Add Online Booking Head
                 </Button>
               </div>
             </div>

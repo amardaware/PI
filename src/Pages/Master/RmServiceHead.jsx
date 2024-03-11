@@ -6,22 +6,19 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
-import * as CATEGORY from "../../Services/ServiceCategory";
-
-export default function RmCategory() {
+import * as SERVICEHEAD from "../../Services/ServiceRoomServiceHead";
+export default function RmServiceHead() {
   let status = 0;
   let apidata = "";
   let tableBody = "";
   let modelBody = "";
   const [modelShow, setModelShow] = useState(false);
-  const [modelTitle, setModelTitle] = useState("Create New Category");
+  const [modelTitle, setModelTitle] = useState("Create Service Head");
   const [modelBtnActionText, setModelBtnActionText] = useState("Create");
   const [showTable, setShowTable] = useState(false);
-  const [categories, setCategories] = useState([]);
-  const [categoryId, setCategoryId] = useState("");
-  const [categoryDesc, setCategoryDesc] = useState("");
-  const [categoryFare, setCategoryFare] = useState("");
-  const [categoryExtra, setCategoryExtra] = useState("");
+  const [serviceHeads, setServiceHeads] = useState([]);
+  const [serviceHeadId, setServiceHeadId] = useState("");
+  const [serviceHeadDesc, setServiceHeadDesc] = useState("");
 
   useEffect(() => {
     $("#example1").DataTable().destroy();
@@ -35,16 +32,16 @@ export default function RmCategory() {
       .buttons()
       .container()
       .appendTo("#example1_wrapper .col-md-6:eq(0)");
-    CategoryAPICall();
+    ServiceHeadAPICall();
   }, [showTable]);
 
-  const CategoryAPICall = () => {
-    CATEGORY.GET_CATEGORY()
+  const ServiceHeadAPICall = () => {
+    SERVICEHEAD.GET_ROOM_SERVICE_HEAD()
       .then((response) => {
         status = response.data.STATUS;
         apidata = response.data.DATA;
         if (status === 200) {
-          setCategories(apidata);
+          setServiceHeads(apidata);
           setShowTable(true);
         } else {
           Swal.fire({
@@ -63,8 +60,8 @@ export default function RmCategory() {
       });
   };
 
-  const CreateCategoryAPICall = (categoryDesc, categoryFare, categoryExtra) => {
-    CATEGORY.CREATE_CATEGORY(categoryDesc, categoryFare, categoryExtra)
+  const CreateServiceHeadAPICall = (serviceHeadDesc) => {
+    SERVICEHEAD.CREATE_ROOM_SERVICE_HEAD(serviceHeadDesc)
       .then((response) => {
         if (response.data.STATUS == 400) {
           Swal.fire({
@@ -82,11 +79,11 @@ export default function RmCategory() {
           Swal.fire({
             icon: "success",
             title: "Server Response",
-            text: "Category Created Successfully !",
+            text: "Service Head Created Successfully !",
           }).then((result) => {
             if (result.isConfirmed) {
               setModelShow(false);
-              CategoryAPICall();
+              ServiceHeadAPICall();
             }
           });
         }
@@ -100,15 +97,10 @@ export default function RmCategory() {
       });
   };
 
-  const UpdateCategoryAPICall = (itemdata) => {
+  const UpdateServiceHeadAPICall = (itemdata) => {
     setModelShow(true);
     setModelBtnActionText("Update");
-    CATEGORY.UPDATE_CATEGORY(
-      categoryDesc,
-      categoryFare,
-      categoryExtra,
-      categoryId
-    )
+    SERVICEHEAD.UPDATE_ROOM_SERVICE_HEAD(serviceHeadDesc, serviceHeadId)
       .then((response) => {
         if (response.data.STATUS == 400) {
           Swal.fire({
@@ -130,13 +122,10 @@ export default function RmCategory() {
           }).then((result) => {
             if (result.isConfirmed) {
               setModelShow(false);
-              CategoryAPICall();
-              setCategoryDesc("");
-              setCategoryFare("");
-              setCategoryExtra("");
-              setCategoryId("");
+              ServiceHeadAPICall();
+              setServiceHeadDesc("");
               setModelBtnActionText("Create");
-              setModelTitle("Create New Category");
+              setModelTitle("Create Service Head");
             }
           });
         }
@@ -150,7 +139,7 @@ export default function RmCategory() {
       });
   };
 
-  const DeleteCategoryAPICall = (itemdata) => {
+  const DeleteServiceHeadAPICall = (itemdata) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -161,7 +150,7 @@ export default function RmCategory() {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        CATEGORY.DELETE_CATEGORY(itemdata.RMCT_CODE)
+        SERVICEHEAD.DELETE_ROOM_SERVICE_HEAD(itemdata.RMSR_CODE)
           .then((response) => {
             if (response.data.STATUS == 400) {
               Swal.fire({
@@ -177,7 +166,7 @@ export default function RmCategory() {
                 icon: "success",
               }).then((result) => {
                 if (result.isConfirmed) {
-                  CategoryAPICall();
+                  ServiceHeadAPICall();
                 }
               });
             }
@@ -196,31 +185,21 @@ export default function RmCategory() {
   const onModelClose = () => {
     setModelShow(false);
     setModelBtnActionText("Create");
-    setCategoryDesc("");
-    setCategoryFare("");
-    setCategoryExtra("");
-    setCategoryId("");
-    setModelTitle("Create new Category");
+    setServiceHeadDesc("");
+    setModelTitle("Create Service Head");
   };
 
   const onModelOpen = () => {
     setModelShow(true);
-    setCategoryDesc("");
-    setCategoryFare("");
-    setCategoryExtra("");
-    setCategoryId("");
+    setServiceHeadDesc("");
+    setServiceHeadId("");
   };
 
   const onModelAction = (itemData) => {
     if (modelBtnActionText == "Create") {
-      CreateCategoryAPICall(categoryDesc, categoryFare, categoryExtra);
+      CreateServiceHeadAPICall(serviceHeadDesc);
     } else if (modelBtnActionText == "Update") {
-      UpdateCategoryAPICall(
-        categoryDesc,
-        categoryFare,
-        categoryExtra,
-        categoryId
-      );
+      UpdateServiceHeadAPICall(serviceHeadDesc, serviceHeadId);
     }
   };
 
@@ -228,13 +207,11 @@ export default function RmCategory() {
     if (ACTION_TYPE === "Edit") {
       setModelShow(true);
       setModelBtnActionText("Update");
-      setModelTitle("Update Category");
-      setCategoryDesc(itemData.RMCT_DESC);
-      setCategoryFare(itemData.ROOM_FARE);
-      setCategoryExtra(itemData.EXTRA_PERSON_FARE);
-      setCategoryId(itemData.RMCT_CODE);
+      setModelTitle("Update Service Head");
+      setServiceHeadDesc(itemData.RMSR_DESC);
+      setServiceHeadId(itemData.RMSR_CODE);
     } else if (ACTION_TYPE === "Delete") {
-      DeleteCategoryAPICall(itemData);
+      DeleteServiceHeadAPICall(itemData);
     }
   };
 
@@ -247,30 +224,14 @@ export default function RmCategory() {
         <Modal.Body>
           <Form>
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label className="modelFormLabel">Category</Form.Label>
-              <Form.Control
-                type="text"
-                value={categoryDesc}
-                onChange={(e) => setCategoryDesc(e.target.value)}
-                autoFocus
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label className="modelFormLabel">Room Fare</Form.Label>
-              <Form.Control
-                type="number"
-                value={categoryFare}
-                onChange={(e) => setCategoryFare(e.target.value)}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
               <Form.Label className="modelFormLabel">
-                Extra Person Fare
+                Room Service Head
               </Form.Label>
               <Form.Control
-                type="number"
-                value={categoryExtra}
-                onChange={(e) => setCategoryExtra(e.target.value)}
+                type="text"
+                value={serviceHeadDesc}
+                onChange={(e) => setServiceHeadDesc(e.target.value)}
+                autoFocus
               />
             </Form.Group>
           </Form>
@@ -300,22 +261,18 @@ export default function RmCategory() {
                 >
                   <thead className="bg-info">
                     <tr>
-                      <th>Category Id</th>
-                      <th>Room Category</th>
-                      <th>Fare</th>
-                      <th>Extra Person Fare</th>
+                      <th>Room Service Head Id</th>
+                      <th>Room Service Head Desc</th>
                       <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {categories &&
-                      categories.map((item, index) => {
+                    {serviceHeads &&
+                      serviceHeads.map((item, index) => {
                         return (
                           <tr key={index}>
-                            <td>{item.RMCT_CODE}</td>
-                            <td>{item.RMCT_DESC}</td>
-                            <td>{item.ROOM_FARE}</td>
-                            <td>{item.EXTRA_PERSON_FARE}</td>
+                            <td>{item.RMSR_CODE}</td>
+                            <td>{item.RMSR_DESC}</td>
                             <td>
                               <div
                                 className="btn-group"
@@ -358,20 +315,6 @@ export default function RmCategory() {
       </>
     );
   }
-
-  function alertM() {
-    Swal.fire({
-      title: "Do you want to save the changes?",
-      html: formBody,
-    }).then((result) => {
-      /* Read more about isConfirmed, isDenied below */
-      if (result.isConfirmed) {
-        Swal.fire("Saved!", "", "success");
-      } else if (result.isDenied) {
-        Swal.fire("Changes are not saved", "", "info");
-      }
-    });
-  }
   return (
     <>
       <Nav />
@@ -385,7 +328,7 @@ export default function RmCategory() {
                   className=" btn btn-info text-bold  mx-3"
                   onClick={onModelOpen}
                 >
-                  Add New Category
+                  Add Room Service Head
                 </Button>
               </div>
             </div>
